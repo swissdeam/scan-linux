@@ -118,7 +118,23 @@ func read(p serial.Port, b []byte, c string) {
 				clipboard.Write(clipboard.FmtText, []byte(codex2[0]))
 
 				// initialize keyboard and check for possible errors
-				keyboard, err := uinput.CreateKeyboard("/dev/uinput", []byte("testkeyboard"))
+				// keyboard, err := uinput.CreateKeyboard("/dev/uinput", []byte("testkeyboard"))
+				// if err != nil {
+				// 	return
+				// }
+
+				// if runtime.GOOS == "linux" {
+				// 	time.Sleep(2 * time.Second)
+				// }
+
+				// defer keyboard.Close()
+
+				// keyboard.KeyDown(uinput.KeyLeftctrl)
+				// keyboard.KeyPress(uinput.KeyV)
+				// keyboard.KeyUp(uinput.KeyLeftctrl)
+
+
+				mouse, err := uinput.CreateMouse("/dev/uinput", []byte("testmousr"))
 				if err != nil {
 					return
 				}
@@ -126,12 +142,9 @@ func read(p serial.Port, b []byte, c string) {
 				if runtime.GOOS == "linux" {
 					time.Sleep(2 * time.Second)
 				}
-
-				defer keyboard.Close()
-
-				keyboard.KeyDown(uinput.KeyLeftctrl)
-				keyboard.KeyPress(uinput.KeyV)
-				keyboard.KeyUp(uinput.KeyLeftctrl)
+				// always do this after the initialization in order to guarantee that the device will be properly closed
+				defer mouse.Close()
+				mouse.MiddleClick()
 
 				// fmt.Println(c, "Check response")
 				// fmt.Println(codex1, "Check response x1")
