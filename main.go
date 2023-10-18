@@ -109,16 +109,35 @@ func read(p serial.Port, b []byte, c string) {
 
 				pattern1, _ := regexp.Compile(`\[[a-zA-Z0-9]+\]`)
 				codex1 := pattern1.FindAllString(c, -1)
-				// fmt.Println(codex1)
+				fmt.Println(codex1)
 
 				pattern2, _ := regexp.Compile(`[a-zA-Z0-9]+`)
 				codex2 := pattern2.FindAllString(codex1[0], -1)
-				// fmt.Println(codex2)
+				fmt.Println(codex2)
 
-				clipboard.Write(clipboard.FmtText, []byte(codex2[0]))
+				var temp string = codex2[0]
+
+				clipboard.Write(clipboard.FmtText, []byte(temp))
+				fmt.Println("ИЗ БО",clipboard.Read)
 
 				// initialize keyboard and check for possible errors
-				// keyboard, err := uinput.CreateKeyboard("/dev/uinput", []byte("testkeyboard"))
+				keyboard, err := uinput.CreateKeyboard("/dev/uinput", []byte("testkeyboard"))
+				if err != nil {
+					return
+				}
+
+				if runtime.GOOS == "linux" {
+					time.Sleep(10 * time.Second)
+				}
+
+				defer keyboard.Close()
+
+				keyboard.KeyDown(uinput.KeyLeftctrl)
+				keyboard.KeyPress(uinput.KeyV)
+				keyboard.KeyUp(uinput.KeyLeftctrl)
+
+
+				// mouse, err := uinput.CreateMouse("/dev/uinput", []byte("testmousr"))
 				// if err != nil {
 				// 	return
 				// }
@@ -126,25 +145,9 @@ func read(p serial.Port, b []byte, c string) {
 				// if runtime.GOOS == "linux" {
 				// 	time.Sleep(2 * time.Second)
 				// }
-
-				// defer keyboard.Close()
-
-				// keyboard.KeyDown(uinput.KeyLeftctrl)
-				// keyboard.KeyPress(uinput.KeyV)
-				// keyboard.KeyUp(uinput.KeyLeftctrl)
-
-
-				mouse, err := uinput.CreateMouse("/dev/uinput", []byte("testmousr"))
-				if err != nil {
-					return
-				}
-
-				if runtime.GOOS == "linux" {
-					time.Sleep(2 * time.Second)
-				}
-				// always do this after the initialization in order to guarantee that the device will be properly closed
-				defer mouse.Close()
-				mouse.MiddleClick()
+				// // always do this after the initialization in order to guarantee that the device will be properly closed
+				// defer mouse.Close()
+				// mouse.MiddleClick()
 
 				// fmt.Println(c, "Check response")
 				// fmt.Println(codex1, "Check response x1")
